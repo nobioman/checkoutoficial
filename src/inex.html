@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ec0074">
+  <title>Checkout Pix</title>
+  <style>
+    :root {
+      --pink: #ec0074;
+      --pink-dark: #d90068;
+      --pink-soft: #fff3f8;
+      --pink-border: #ffb7d6;
+      --ink: #29243a;
+      --muted: #777187;
+      --line: #eee8ef;
+      --panel: #fff;
+      --warning-bg: #fff8df;
+      --warning-border: #ffc94d;
+      --success: #087f5b;
+      --danger: #d62828;
+    }
+    * { box-sizing: border-box; }
+    html { min-height: 100%; background: #f7f4f7; }
+    body {
+      margin: 0; padding: 7px 10px 24px; color: var(--ink);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      font-size: 12px; background: #f7f4f7;
+    }
+    .timer-wrap { max-width: 760px; margin: 0 auto 8px; }
+    .timer {
+      min-height: 43px; display: flex; justify-content: center; align-items: center; gap: 9px;
+      border: 1px solid #ffbd37; border-radius: 8px; background: #fff4cc;
+      color: #b76500; font-size: 12px; font-weight: 600; letter-spacing: .1px;
+    }
+    .timer strong { color: #ef1f36; font-size: 20px; letter-spacing: 1px; font-variant-numeric: tabular-nums; }
+    .checkout {
+      max-width: 760px; margin: 0 auto; overflow: hidden; background: var(--panel);
+      border: 1px solid #e9e3eb; border-radius: 15px; box-shadow: 0 3px 15px rgba(45, 24, 48, .07);
+    }
+    .header {
+      text-align: center; padding: 16px 16px 14px;
+      background: linear-gradient(180deg, #fff1f7 0%, #fffafd 100%);
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      display: inline-block; padding: 5px 10px; border: 1px solid #ffbfdc; border-radius: 20px;
+      color: var(--pink); background: #fff; font-size: 9px; letter-spacing: .7px; font-weight: 700;
+    }
+    h1 { margin: 10px 0 7px; font-size: 18px; line-height: 1.2; color: var(--pink); font-weight: 750; }
+    .subtitle { margin: 0; color: var(--muted); font-size: 10px; }
+    .content { padding: 12px; }
+    .notice {
+      margin-bottom: 12px; padding: 10px 11px; border: 1px solid var(--warning-border);
+      border-radius: 9px; background: var(--warning-bg); color: #674b13; line-height: 1.5;
+    }
+    .notice strong { display: block; font-size: 10px; margin-bottom: 2px; }
+    .notice span { display: block; font-size: 9px; }
+    .amount-card {
+      text-align: center; padding: 14px 10px 13px; border: 1px solid var(--pink);
+      border-radius: 10px; background: #fff7fb;
+    }
+    .amount-label { color: var(--muted); font-size: 10px; margin-bottom: 6px; }
+    .amount { color: var(--pink); font-size: 25px; font-weight: 800; letter-spacing: -.4px; line-height: 1.15; }
+    .test-tag {
+      display: inline-block; margin-top: 9px; padding: 4px 7px; border-radius: 4px;
+      background: #ffe0ee; color: #c80061; font-size: 8px; font-weight: 700;
+    }
+    .qr-area { text-align: center; padding: 14px 0 12px; }
+    .qr-box {
+      width: 131px; height: 131px; margin: 0 auto 9px; border: 1px solid var(--pink);
+      border-radius: 10px; display: flex; justify-content: center; align-items: center;
+      padding: 8px; background: white; color: #756a7b; font-size: 10px; line-height: 1.45;
+    }
+    .qr-box img { display: block; width: 100%; height: 100%; object-fit: contain; }
+    .qr-caption { margin: 0; font-size: 9px; color: var(--muted); }
+    .steps { list-style: none; padding: 0; margin: 9px 0 15px; }
+    .steps li {
+      display: flex; align-items: center; gap: 8px; min-height: 34px; padding: 7px 0;
+      border-bottom: 1px solid var(--line); font-size: 9px; line-height: 1.4;
+    }
+    .steps li:last-child { border-bottom: 0; }
+    .step-number {
+      width: 17px; height: 17px; flex: 0 0 17px; display: inline-flex; align-items: center;
+      justify-content: center; border-radius: 50%; background: var(--pink); color: #fff;
+      font-size: 9px; font-weight: 700;
+    }
+    .copy-label { display: block; margin-bottom: 7px; color: var(--pink); font-size: 8px; letter-spacing: .5px; font-weight: 700; }
+    .pix-code {
+      width: 100%; min-height: 85px; padding: 10px; resize: vertical; border: 1px solid #ffc4df;
+      border-radius: 8px; background: #fff7fb; color: #5e5366; font-family: Consolas, monospace;
+      font-size: 9px; line-height: 1.5; outline: none;
+    }
+    .pix-code:focus { border-color: var(--pink); box-shadow: 0 0 0 2px #ffe0ee; }
+    .copy-button, .primary-button {
+      display: flex; justify-content: center; align-items: center; gap: 7px; width: 100%;
+      min-height: 40px; margin-top: 8px; padding: 10px 12px; border: 0; border-radius: 8px;
+      background: var(--pink); color: white; font-size: 11px; font-weight: 750; cursor: pointer;
+      box-shadow: 0 3px 8px rgba(236, 0, 116, .16); transition: background .15s, transform .15s;
+    }
+    .copy-button:hover, .primary-button:hover { background: var(--pink-dark); }
+    .copy-button:active, .primary-button:active { transform: translateY(1px); }
+    button:disabled { opacity: .55; cursor: not-allowed; box-shadow: none; }
+    .status {
+      margin-top: 9px; min-height: 32px; padding: 9px 10px; display: flex; align-items: center;
+      justify-content: center; text-align: center; border-radius: 8px; background: #f7f5f8;
+      color: #777187; font-size: 9px; line-height: 1.4;
+    }
+    .status.error { color: var(--danger); background: #fff0f0; }
+    .status.success { color: var(--success); background: #eafaf3; }
+    .customer-form {
+      display: none; margin: 12px 0; padding: 12px; border: 1px solid var(--line); border-radius: 9px;
+      background: #fff;
+    }
+    .customer-form.visible { display: block; }
+    .form-title { margin: 0 0 10px; font-size: 12px; font-weight: 750; }
+    .field { display: block; margin-bottom: 9px; }
+    .field span { display: block; margin-bottom: 5px; color: #4d4558; font-size: 10px; font-weight: 650; }
+    .field input {
+      width: 100%; min-height: 37px; padding: 9px 10px; border: 1px solid #e2dce5; border-radius: 7px;
+      color: var(--ink); background: #fff; font: inherit; font-size: 11px; outline: none;
+    }
+    .field input:focus { border-color: var(--pink); box-shadow: 0 0 0 2px #ffe0ee; }
+    .form-note { margin: 7px 0 0; color: var(--muted); font-size: 9px; line-height: 1.5; }
+    .footer {
+      padding: 11px 10px; border-top: 1px solid var(--line); text-align: center;
+      color: #8b8292; font-size: 8px;
+    }
+    .hidden { display: none !important; }
+    @media (min-width: 600px) {
+      body { padding-top: 20px; }
+      .content { padding: 18px; }
+      .header { padding: 22px 18px 18px; }
+      .qr-box { width: 150px; height: 150px; }
+      .steps li { font-size: 11px; min-height: 39px; }
+      .notice span, .subtitle { font-size: 11px; }
+      .pix-code { min-height: 95px; font-size: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="timer-wrap">
+    <div class="timer" role="timer" aria-live="off">
+      <span aria-hidden="true">◷</span><span>Tempo restante:</span>
+      <strong id="timerValue">08:17</strong>
+    </div>
+  </div>
+
+  <main class="checkout">
+    <header class="header">
+      <span class="eyebrow">PAGAMENTO VIA PIX</span>
+      <h1>Guia de pagamento</h1>
+      <p class="subtitle">Finalize seu pedido com segurança usando Pix.</p>
+    </header>
+
+    <div class="content">
+      <section class="notice" id="demoNotice">
+        <strong>⚠️ Ambiente demonstrativo</strong>
+        <span>O QR Code e os dados abaixo serão preenchidos após solicitar uma cobrança ao gateway. Confira o beneficiário e o valor no aplicativo do seu banco.</span>
+      </section>
+
+      <section class="amount-card" aria-label="Valor do pedido">
+        <div class="amount-label" id="productName">Produto digital</div>
+        <div class="amount" id="amountValue">R$ 39,99</div>
+        <span class="test-tag" id="amountTag">VALOR DO PEDIDO</span>
+      </section>
+
+      <section class="qr-area" aria-label="QR Code Pix">
+        <div class="qr-box" id="qrBox">
+          <span id="qrPlaceholder">QR Code<br>será exibido aqui<br>após criar a cobrança</span>
+          <img id="qrImage" class="hidden" alt="QR Code Pix para pagamento">
+        </div>
+        <p class="qr-caption" id="qrCaption">O QR Code será exibido após criar a cobrança.</p>
+      </section>
+
+      <ol class="steps">
+        <li><span class="step-number">1</span><span>Abra o aplicativo do seu banco.</span></li>
+        <li><span class="step-number">2</span><span>Escolha Pix e selecione “Ler QR Code” ou “Pix Copia e Cola”.</span></li>
+        <li><span class="step-number">3</span><span>Confira o beneficiário e o valor antes de confirmar.</span></li>
+        <li><span class="step-number">4</span><span>Aguarde a confirmação real do gateway de pagamento.</span></li>
+      </ol>
+
+      <form id="customerForm" class="customer-form">
+        <h2 class="form-title">Dados para gerar o Pix</h2>
+        <label class="field"><span>Nome completo</span><input name="name" autocomplete="name" required minlength="2" maxlength="120" placeholder="Seu nome completo"></label>
+        <label class="field"><span>E-mail</span><input name="email" type="email" autocomplete="email" required placeholder="voce@exemplo.com"></label>
+        <label class="field"><span>CPF ou CNPJ</span><input name="document" inputmode="numeric" autocomplete="off" required placeholder="Somente números ou com pontuação"></label>
+        <label class="field"><span>Telefone com DDD</span><input name="phone" type="tel" autocomplete="tel" required placeholder="(11) 99999-9999"></label>
+        <button class="primary-button" id="createButton" type="submit">Gerar cobrança Pix</button>
+        <p class="form-note">Seus dados serão enviados à API do checkout para solicitar a cobrança ao gateway.</p>
+      </form>
+
+      <textarea id="pixCode" class="pix-code" aria-label="Código Pix copia e cola" readonly placeholder="O código Pix será disponibilizado pelo gateway."></textarea>
+      <button id="copyButton" class="copy-button" type="button">▣ Copiar código Pix</button>
+      <button id="showFormButton" class="primary-button" type="button">Gerar meu Pix</button>
+      <div id="status" class="status" role="status" aria-live="polite">Aguardando integração com o gateway.</div>
+    </div>
+
+    <footer class="footer">Checkout Pix · Confira os dados no aplicativo do seu banco antes de pagar.</footer>
+  </main>
+
+  <script>
+    // A página espera a API local em http://localhost:3000.
+    // Para usar outro endereço, defina window.CHECKOUT_API_URL antes deste script.
+    const API_BASE = (window.CHECKOUT_API_URL || 'http://localhost:3000').replace(/\/+$/, '');
+    const DEFAULT_PRICE_CENTS = 3999; // Deve corresponder a PRODUCT_PRICE_CENTS no arquivo .env do servidor.
+    const DEFAULT_PRODUCT_NAME = 'Produto digital';
+    const POLL_INTERVAL_MS = 5000;
+    let currentOrderId = null;
+    let pollingTimer = null;
+    let secondsLeft = 8 * 60 + 17;
+
+    const el = id => document.getElementById(id);
+    const money = cents => (cents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    function setStatus(message, kind = '') {
+      const node = el('status');
+      node.textContent = message;
+      node.className = `status${kind ? ' ' + kind : ''}`;
+    }
+    function updateTimer() {
+      const m = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
+      const s = String(secondsLeft % 60).padStart(2, '0');
+      el('timerValue').textContent = `${m}:${s}`;
+      if (secondsLeft <= 60) el('timerValue').style.color = '#ef1f36';
+      if (secondsLeft > 0) secondsLeft--;
+      else {
+        clearInterval(timerInterval);
+        el('timerValue').textContent = '00:00';
+      }
+    }
+    const timerInterval = setInterval(updateTimer, 1000);
+    updateTimer();
+
+    // O preço deve ser definido no servidor. Esta indicação visual deve ser alinhada ao .env.
+    el('amountValue').textContent = money(DEFAULT_PRICE_CENTS);
+    el('productName').textContent = DEFAULT_PRODUCT_NAME;
+
+    el('showFormButton').addEventListener('click', () => {
+      el('customerForm').classList.add('visible');
+      el('customerForm').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      el('showFormButton').classList.add('hidden');
+      el('customerForm').querySelector('input').focus();
+    });
+
+    el('copyButton').addEventListener('click', async () => {
+      const value = el('pixCode').value.trim();
+      if (!value) {
+        setStatus('Gere uma cobrança Pix primeiro para disponibilizar o código.', 'error');
+        el('customerForm').classList.add('visible');
+        el('showFormButton').classList.add('hidden');
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(value);
+      } catch {
+        el('pixCode').focus(); el('pixCode').select();
+        const ok = document.execCommand('copy');
+        if (!ok) { setStatus('Não foi possível copiar automaticamente. Selecione e copie o código.', 'error'); return; }
+      }
+      el('copyButton').textContent = '✓ Código Pix copiado';
+      setStatus('Código copiado. Confira o beneficiário e o valor no seu banco antes de pagar.', 'success');
+      setTimeout(() => el('copyButton').textContent = '▣ Copiar código Pix', 2200);
+    });
+
+    el('customerForm').addEventListener('submit', async event => {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget);
+      const customer = {
+        name: String(form.get('name') || '').trim(),
+        email: String(form.get('email') || '').trim(),
+        document: String(form.get('document') || '').trim(),
+        phone: String(form.get('phone') || '').trim()
+      };
+      const button = el('createButton');
+      button.disabled = true;
+      button.textContent = 'Solicitando cobrança…';
+      setStatus('Conectando à API e solicitando a cobrança Pix…');
+      try {
+        const response = await fetch(`${API_BASE}/api/orders`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ customer })
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || `A API respondeu com erro ${response.status}.`);
+        currentOrderId = data.orderId;
+        if (data.amount != null) el('amountValue').textContent = money(Number(data.amount));
+        if (data.product?.name) el('productName').textContent = data.product.name;
+        const code = data.payment?.copyPaste || data.payment?.qrCode || '';
+        if (code) el('pixCode').value = code;
+        const qrImageUrl = data.payment?.qrImage || data.payment?.qrCodeImage || null;
+        if (qrImageUrl && typeof qrImageUrl === 'string' && (qrImageUrl.startsWith('data:image/') || qrImageUrl.startsWith('https://'))) {
+          el('qrImage').src = qrImageUrl;
+          el('qrImage').classList.remove('hidden');
+          el('qrPlaceholder').classList.add('hidden');
+        } else if (data.payment?.qrCode && typeof data.payment.qrCode === 'string' && data.payment.qrCode.startsWith('data:image/')) {
+          el('qrImage').src = data.payment.qrCode;
+          el('qrImage').classList.remove('hidden');
+          el('qrPlaceholder').classList.add('hidden');
+        } else if (code) {
+          el('qrPlaceholder').innerHTML = 'Cobrança criada<br>Use o código Pix<br>copia e cola abaixo';
+        }
+        el('demoNotice').classList.add('hidden');
+        el('qrCaption').textContent = code
+          ? 'Cobrança criada. Use o QR Code se fornecido pelo gateway ou copie o código Pix abaixo.'
+          : 'Cobrança criada; a resposta não incluiu código Pix reconhecido. Consulte o status ou verifique a resposta do gateway.';
+        el('customerForm').classList.remove('visible');
+        el('showFormButton').classList.remove('hidden');
+        el('showFormButton').textContent = 'Nova cobrança';
+        setStatus(`Cobrança criada. Status: ${data.status || 'pending'}. Aguardando confirmação do pagamento.`, 'success');
+        if (currentOrderId) startPolling();
+      } catch (error) {
+        setStatus(`${error.message} Verifique se a API está rodando em ${API_BASE}.`, 'error');
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Gerar cobrança Pix';
+      }
+    });
+
+    function startPolling() {
+      if (pollingTimer) clearInterval(pollingTimer);
+      pollingTimer = setInterval(async () => {
+        if (!currentOrderId) return;
+        try {
+          const response = await fetch(`${API_BASE}/api/orders/${encodeURIComponent(currentOrderId)}`);
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(data.error || 'Falha ao consultar status.');
+          const status = String(data.status || 'pending').toLowerCase();
+          if (status === 'paid') {
+            clearInterval(pollingTimer);
+            setStatus('Pagamento confirmado pelo gateway! Obrigado pela compra.', 'success');
+          } else if (['failed', 'refused', 'expired', 'cancelled', 'refunded'].includes(status)) {
+            clearInterval(pollingTimer);
+            setStatus(`Status da cobrança: ${status}. Se necessário, gere uma nova cobrança.`, 'error');
+          } else {
+            setStatus(`Status do pagamento: ${status}. Aguardando confirmação do gateway.`);
+          }
+        } catch {
+          setStatus('Cobrança criada. Não foi possível atualizar o status neste momento.');
+        }
+      }, POLL_INTERVAL_MS);
+    }
+  </script>
+</body>
+</html>
