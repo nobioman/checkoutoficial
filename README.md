@@ -22,3 +22,4 @@ O valor vem da variável de ambiente no servidor, não do navegador. A chave do 
 
 ## Importante
 Esta é uma base de desenvolvimento. Confirmar os campos reais da resposta de criação e o formato/autenticação do webhook com a InvictusPay antes de produção. O arquivo JSON é adequado apenas para desenvolvimento local simples; para produção ou múltiplas instâncias use banco persistente adequado (por exemplo PostgreSQL), HTTPS, validação de webhook, idempotência, monitoramento e revisão de segurança. Não liberar produto com base em status enviado pelo navegador.
+# checkoutoficial
